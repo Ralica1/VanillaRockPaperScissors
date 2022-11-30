@@ -16,3 +16,24 @@ function computerPlay() {
         return 1;
     }
 }
+function playRound(usersChoice, computersChoice) {
+    computersChoice = computerPlay().toLowerCase();
+    usersChoice = usersChoice.toLowerCase();
+    console.log(`Users Choice: ${usersChoice} and Computers Choice: ${computersChoice}`);
+    
+    if (usersChoice == "rock" && computersChoice == "rock" ||
+        usersChoice == "scissor" && computersChoice == "scissor" ||
+        usersChoice == "paper" && computersChoice == "paper") {
+            console.log(`Tie! Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
+            return "Both";
+    } else if (usersChoice == "rock" && computersChoice == "scissor" ||
+                usersChoice == "paper" && computersChoice == "rock" ||
+                usersChoice == "scissor" && computersChoice == "paper") {
+                    console.log(`You Won! Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
+                    return "User";
+                } else {
+                    console.log(`You loose! Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
+                    return "Computer";
+                }
+
+}
