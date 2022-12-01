@@ -1,3 +1,4 @@
+console.log("Enter 'play()' to start the game!")
 function computerPlay() {
     random = Math.random() * 100;
     let computersChoice;
