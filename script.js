@@ -1,86 +1,132 @@
-//1.
-const GAMEOPTIONS = ["Rock", "Paper", "Scissors"];
+const GAMEOPTIONS = ["Rock", "Paper", "Scissor"];
 
+// Score cards on screen
+let humanScoreCard = document.querySelector(".humanScoreCard");
+let computerScoreCard = document.querySelector(".computerScoreCard");
 
-let computerHand = () => {
-    return Math.floor(Math.random() * GAMEOPTIONS.length);
+// Points
+let humanPoints = 0;
+let computerPoints = 0;
+
+// Update Points
+function updatePoints() {
+    humanScoreCard.innerText = String(humanPoints);
+    computerScoreCard.innerText = String(computerPoints);
 }
 
-//2.
-let userHand = () => {
-    const prompt = require('prompt-sync')({sigint: true});
+// Human and computer hand
+let humanHand = (hand) => GAMEOPTIONS.indexOf(hand);
+let computerHand = () => Math.floor(Math.random() * GAMEOPTIONS.length);
 
-    let hand;
-
-    while (!(hand in [...Array(GAMEOPTIONS.length + 1).keys()])) {
-        hand = Number(prompt("Your choice: "));
+// Result calculator
+let result = (user, computer) => {
+    if (user === computer) {
+        return "tie";
+    } else if ((user === 0 && computer === 2) || user === computer+1) {
+        humanPoints++;
+        return "human";
+    } else {
+        computerPoints++;
+        return "computer";
     }
 
     return hand;
 
 }
 
-// 3.
+function updateFrontEnd(human, computer, winner) {
 
-let result = (user, computer) => {
+    // Human update
 
-    if (user === computer) {
-        return "tie";
-    } else if ((user === 0 && computer === 2) || user === computer+1) {
-        return "user";
+    let humanVote = document.querySelector(`.${GAMEOPTIONS[human].toLocaleLowerCase()}.human`);
+    humanVote.classList.add('selected');
+
+    // Computer update
+    let computerVote = document.querySelector(`.${GAMEOPTIONS[computer].toLocaleLowerCase()}.computer`);
+    computerVote.classList.add('selected');
+
+    if (humanPoints === 5 || computerPoints === 5) {
+        winnerUpdate(winner);
+        return;
+    }
+
+    if (winner !== "tie") {
+        var winnerTag = document.querySelector(`.player.${winner}`);
+        winnerTag.innerText = "Winner!";
+        document.querySelector(`#${winner}`).classList.add('winner');
     } else {
-        return "computer";
+        document.querySelector('.player.human').innerText = "Tie!";
+        document.querySelector('.player.computer').innerText = "Tie!";
     }
+
+    // Update Points
+    updatePoints();
+
+    // Clean Shop
+    setTimeout(function() {
+        humanVote.classList.remove('selected');
+        computerVote.classList.remove('selected');
+
+        if (winner !== "tie") {
+            winnerTag.innerText = winner.charAt(0).toUpperCase() + winner.slice(1);
+            document.querySelector(`#${winner}`).classList.remove('winner');
+        } else {
+            document.querySelector('.player.human').innerText = "Human";
+            document.querySelector('.player.computer').innerText = "Computer";
+        }
+
+    }, 500);
+
 
 }
 
-//4.
-let game = () => {
+function winnerUpdate(winner) {
 
-    console.log("Welcome to Paper Rock Scissors!");
-    console.log("Can you make it against the might of your computer?");
+    var announcement = document.querySelector('.announcement');
+    announcement.classList.add('visible');
 
-    let gameIsOn = true;
-
-    let userWins = 0;
-    let computerWins = 0;
-
-    while (gameIsOn) {
-
-        console.log();
-        console.log("------------------------------------------");
-        console.log("Enter [0] for rock, [1] for paper, [2] for scissors, [3] to stop playing.");
-
-        let user = userHand();
-        let computer = computerHand();
-
-        if (user === 3) {
-            gameIsOn = !gameIsOn;
-            console.log("Ok, bye!");
-            continue;
-        }
-
-        console.log(`You chose ${GAMEOPTIONS[user]}.`);
-        console.log(`The computer chose ${GAMEOPTIONS[computer]}.`);
-
-        let outcome = result(user, computer);
-
-        if (outcome === "user") {
-            console.log("You won.");
-            userWins++;
-        } else if (outcome === "computer") {
-            console.log("You lost.");
-            computerWins++;
-        } else if (outcome === "tie") {
-            console.log("It's a tie.");
-        }
-
-        console.log(`You: ${userWins}. Computer: ${computerWins}.`);
-        console.log();
-
-
+    let win = document.querySelector('.win');
+    if (winner === "human") {
+        win.innerText = "You win!"
+    } else {
+        win.innerText = "You lose!"
     }
+
+
+    setTimeout(function() {
+        announcement.classList.remove('visible');
+        location.reload();
+    }, 1500);
 
 }
 
-game();
+function game(e) {
+
+    let human = humanHand(e);
+    let computer = computerHand();
+    let winner = result(human, computer);
+
+    updateFrontEnd(human, computer, winner);
+
+}
+
+
+window.addEventListener('click', function(e){
+
+    const click = e.srcElement.innerText;
+
+    if (GAMEOPTIONS.includes(click)) {
+        game(click);
+    }
+
+});
+
+window.addEventListener('touchstart', function(e){
+
+    const click = e.srcElement.innerText;
+
+    if (GAMEOPTIONS.includes(click)) {
+        game(click);
+    }
+
+});
