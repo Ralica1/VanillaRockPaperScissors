@@ -1,72 +1,86 @@
-console.log("Enter 'play()' to start the game!")
-function computerPlay() {
-    random = Math.random() * 100;
-    let computersChoice;
+//1.
+const GAMEOPTIONS = ["Rock", "Paper", "Scissors"];
 
-    if (random < 33.33 && random >= 0) {
-        computersChoice = "Rock";
-        return computersChoice;
-    } else if (random >= 33.33 && random <= 66.66) {
-        computersChoice = "Paper";
-        return computersChoice;
-    } else if (random >= 66.66 && random <= 100) {
-        computersChoice = "Scissor";
-        return computersChoice;
+
+let computerHand = () => {
+    return Math.floor(Math.random() * GAMEOPTIONS.length);
+}
+
+//2.
+let userHand = () => {
+    const prompt = require('prompt-sync')({sigint: true});
+
+    let hand;
+
+    while (!(hand in [...Array(GAMEOPTIONS.length + 1).keys()])) {
+        hand = Number(prompt("Your choice: "));
+    }
+
+    return hand;
+
+}
+
+// 3.
+
+let result = (user, computer) => {
+
+    if (user === computer) {
+        return "tie";
+    } else if ((user === 0 && computer === 2) || user === computer+1) {
+        return "user";
     } else {
-        console.log("Error, something went wrong!");
-        return 1;
+        return "computer";
     }
-}
-function playRound(usersChoice, computersChoice) {
-    computersChoice = computerPlay().toLowerCase();
-    usersChoice = usersChoice.toLowerCase();
-    console.log(`Users Choice: ${usersChoice} and Computers Choice: ${computersChoice}`);
-    if (usersChoice !== "rock" && usersChoice !== "paper" && usersChoice !== "scissors" ) {
-        console.log(`Bad entry!\n Enter "rock", "paper" or "scissors".`)
-        return "falseEntry"
-    }
-    else if (usersChoice == "rock" && computersChoice == "rock" ||
-        usersChoice == "scissor" && computersChoice == "scissor" ||
-        usersChoice == "paper" && computersChoice == "paper") {
-            console.log(`Tie!\n Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
-            return "Both";
-    } else if (usersChoice == "rock" && computersChoice == "scissor" ||
-                usersChoice == "paper" && computersChoice == "rock" ||
-                usersChoice == "scissor" && computersChoice == "paper") {
-                    console.log(`You Won!\n Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
-                    return "User";
-                } else {
-                    console.log(`You lose!\n Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
-                    return "Computer";
-                }
 
 }
-function play() {
-    let userPoints = 0;
-    let computerPoints = 0;
-    for(let i = 0; i < 5; i++){
-        usersChoice = prompt("Choose Rock, Paper or Scissor!").toLowerCase();
-        let winner = playRound(usersChoice);
-        if (winner == "falseEntry") {
-            i--;
-            userPoints--;
-            computerPoints--;
-        } else if (winner == "User") {
-            userPoints++;
-        } else if (winner == "Computer") {
-            computerPoints++;
-        } else {
-            userPoints++;
-            computerPoints++;
+
+//4.
+let game = () => {
+
+    console.log("Welcome to Paper Rock Scissors!");
+    console.log("Can you make it against the might of your computer?");
+
+    let gameIsOn = true;
+
+    let userWins = 0;
+    let computerWins = 0;
+
+    while (gameIsOn) {
+
+        console.log();
+        console.log("------------------------------------------");
+        console.log("Enter [0] for rock, [1] for paper, [2] for scissors, [3] to stop playing.");
+
+        let user = userHand();
+        let computer = computerHand();
+
+        if (user === 3) {
+            gameIsOn = !gameIsOn;
+            console.log("Ok, bye!");
+            continue;
         }
+
+        console.log(`You chose ${GAMEOPTIONS[user]}.`);
+        console.log(`The computer chose ${GAMEOPTIONS[computer]}.`);
+
+        let outcome = result(user, computer);
+
+        if (outcome === "user") {
+            console.log("You won.");
+            userWins++;
+        } else if (outcome === "computer") {
+            console.log("You lost.");
+            computerWins++;
+        } else if (outcome === "tie") {
+            console.log("It's a tie.");
+        }
+
+        console.log(`You: ${userWins}. Computer: ${computerWins}.`);
+        console.log();
+
+
     }
 
-    if (userPoints > computerPoints) {
-        console.log(`You Won!\n with User: ${userPoints} and Computer: ${computerPoints}`)
-    } else if (userPoints == computerPoints) {
-        console.log(`Tie!\n You have the same amount of Points\n User: ${userPoints} and Computer: ${computerPoints}`)
-    }
-    else {
-        console.log(`You lost!\n with User: ${userPoints} and Computer: ${computerPoints}`)
-    }
 }
+
+game();
