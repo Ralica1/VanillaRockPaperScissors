@@ -1,72 +1,129 @@
-console.log("Enter 'play()' to start the game!")
-function computerPlay() {
-    random = Math.random() * 100;
-    let computersChoice;
+const GAMEOPTIONS = ["Rock", "Paper", "Scissor"];
 
-    if (random < 33.33 && random >= 0) {
-        computersChoice = "Rock";
-        return computersChoice;
-    } else if (random >= 33.33 && random <= 66.66) {
-        computersChoice = "Paper";
-        return computersChoice;
-    } else if (random >= 66.66 && random <= 100) {
-        computersChoice = "Scissor";
-        return computersChoice;
+// Score cards on screen
+let humanScoreCard = document.querySelector(".humanScoreCard");
+let computerScoreCard = document.querySelector(".computerScoreCard");
+
+// Points
+let humanPoints = 0;
+let computerPoints = 0;
+
+// Update Points
+function updatePoints() {
+    humanScoreCard.innerText = String(humanPoints);
+    computerScoreCard.innerText = String(computerPoints);
+}
+
+// Human and computer hand
+let humanHand = (hand) => GAMEOPTIONS.indexOf(hand);
+let computerHand = () => Math.floor(Math.random() * GAMEOPTIONS.length);
+
+// Result calculator
+let result = (user, computer) => {
+    if (user === computer) {
+        return "tie";
+    } else if ((user === 0 && computer === 2) || user === computer+1) {
+        humanPoints++;
+        return "human";
     } else {
-        console.log("Error, something went wrong!");
-        return 1;
+        computerPoints++;
+        return "computer";
     }
 }
-function playRound(usersChoice, computersChoice) {
-    computersChoice = computerPlay().toLowerCase();
-    usersChoice = usersChoice.toLowerCase();
-    console.log(`Users Choice: ${usersChoice} and Computers Choice: ${computersChoice}`);
-    if (usersChoice !== "rock" && usersChoice !== "paper" && usersChoice !== "scissors" ) {
-        console.log(`Bad entry!\n Enter "rock", "paper" or "scissors".`)
-        return "falseEntry"
-    }
-    else if (usersChoice == "rock" && computersChoice == "rock" ||
-        usersChoice == "scissor" && computersChoice == "scissor" ||
-        usersChoice == "paper" && computersChoice == "paper") {
-            console.log(`Tie!\n Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
-            return "Both";
-    } else if (usersChoice == "rock" && computersChoice == "scissor" ||
-                usersChoice == "paper" && computersChoice == "rock" ||
-                usersChoice == "scissor" && computersChoice == "paper") {
-                    console.log(`You Won!\n Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
-                    return "User";
-                } else {
-                    console.log(`You lose!\n Computer Choose ${computersChoice.toUpperCase()} and you choose ${usersChoice.toUpperCase()}`);
-                    return "Computer";
-                }
 
-}
-function play() {
-    let userPoints = 0;
-    let computerPoints = 0;
-    for(let i = 0; i < 5; i++){
-        usersChoice = prompt("Choose Rock, Paper or Scissor!").toLowerCase();
-        let winner = playRound(usersChoice);
-        if (winner == "falseEntry") {
-            i--;
-            userPoints--;
-            computerPoints--;
-        } else if (winner == "User") {
-            userPoints++;
-        } else if (winner == "Computer") {
-            computerPoints++;
+function updateFrontEnd(human, computer, winner) {
+
+    // Human update
+
+    let humanVote = document.querySelector(`.${GAMEOPTIONS[human].toLocaleLowerCase()}.human`);
+    humanVote.classList.add('selected');
+
+    // Computer update
+    let computerVote = document.querySelector(`.${GAMEOPTIONS[computer].toLocaleLowerCase()}.computer`);
+    computerVote.classList.add('selected');
+
+    if (humanPoints === 5 || computerPoints === 5) {
+        winnerUpdate(winner);
+        return;
+    }
+
+    if (winner !== "tie") {
+        var winnerTag = document.querySelector(`.player.${winner}`);
+        winnerTag.innerText = "Winner!";
+        document.querySelector(`#${winner}`).classList.add('winner');
+    } else {
+        document.querySelector('.player.human').innerText = "Tie!";
+        document.querySelector('.player.computer').innerText = "Tie!";
+    }
+
+    // Update Points
+    updatePoints();
+
+    // Clean Shop
+    setTimeout(function() {
+        humanVote.classList.remove('selected');
+        computerVote.classList.remove('selected');
+
+        if (winner !== "tie") {
+            winnerTag.innerText = winner.charAt(0).toUpperCase() + winner.slice(1);
+            document.querySelector(`#${winner}`).classList.remove('winner');
         } else {
-            userPoints++;
-            computerPoints++;
+            document.querySelector('.player.human').innerText = "Human";
+            document.querySelector('.player.computer').innerText = "Computer";
         }
+
+    }, 500);
+
+
+}
+
+function winnerUpdate(winner) {
+
+    var announcement = document.querySelector('.announcement');
+    announcement.classList.add('visible');
+
+    let win = document.querySelector('.win');
+    if (winner === "human") {
+        win.innerText = "You win!"
+    } else {
+        win.innerText = "You lose!"
     }
 
-    if (userPoints > computerPoints) {
-        console.log(`You Won!\n with User: ${userPoints} and Computer: ${computerPoints}`)
-    } else if (userPoints == computerPoints) {
-        console.log(`Tie!\n You have the same amount of Points\n User: ${userPoints} and Computer: ${computerPoints}`)
-    }
-    else {
-        console.log(`You lost!\n with User: ${userPoints} and Computer: ${computerPoints}`)
-    }
+
+    setTimeout(function() {
+        announcement.classList.remove('visible');
+        location.reload();
+    }, 1500);
+
 }
+
+function game(e) {
+
+    let human = humanHand(e);
+    let computer = computerHand();
+    let winner = result(human, computer);
+
+    updateFrontEnd(human, computer, winner);
+
+}
+
+
+window.addEventListener('click', function(e){
+
+    const click = e.srcElement.innerText;
+
+    if (GAMEOPTIONS.includes(click)) {
+        game(click);
+    }
+
+});
+
+window.addEventListener('touchstart', function(e){
+
+    const click = e.srcElement.innerText;
+
+    if (GAMEOPTIONS.includes(click)) {
+        game(click);
+    }
+
+});
