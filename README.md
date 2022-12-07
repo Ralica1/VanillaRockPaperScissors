@@ -22,9 +22,8 @@ From The Odin Project's curriculum.
 ## Outcome
 
 * Used HTML5 **semantic elements** for better readability and structure.
-* Used CSS3 **grid** to create template and responsivness.
+* Used CSS3 **flex** to create template and responsivness.
 * Used **Git** and **GitHub** for project management.
-* Used **Font Awesome** icons.
 * Tried to maintain **clean code** (0 ESLint warnings/errors).
 * **Cross tested** on Firefox and Chromium based browsers.
 
